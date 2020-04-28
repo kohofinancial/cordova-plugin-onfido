@@ -87,7 +87,6 @@ public class OnfidoActivity extends Activity {
             String locale = "en";
             ArrayList<String> flowSteps=null;
             if (extras != null) {
-                applicantId = extras.getString("applicant_id");
                 documentType = extras.getString("document_type");
                 token = extras.getString("token");
                 flowSteps = extras.getStringArrayList("flow_steps");
@@ -97,14 +96,12 @@ public class OnfidoActivity extends Activity {
             FlowStep[] flow = generateFlowStep(flowSteps, DocumentTypesMap.get(documentType));
 
             final OnfidoConfig config = OnfidoConfig.builder(this)
-                    .withToken(token)
-                    .withApplicant(applicantId)
+                    .withSDKToken(token)
                     .withCustomFlow(flow)
                     .withLocale(new Locale(locale))
                     .build();
-            client.startActivityForResult(this,         /*must be an activity*/
-                    1,            /*this request code will be important for you on onActivityResult() to identity the onfido callback*/
-                    config);
+
+            client.startActivityForResult(this, 1, config);
         }
     }
 
