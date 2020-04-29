@@ -17,10 +17,12 @@ import com.onfido.android.sdk.capture.ui.camera.face.FaceCaptureVariant;
 import com.onfido.android.sdk.capture.ui.camera.face.FaceCaptureStep;
 import com.onfido.android.sdk.capture.ui.options.FlowStep;
 import com.onfido.android.sdk.capture.ui.options.CaptureScreenStep;
+import com.onfido.android.sdk.capture.ui.options.stepbuilder.DocumentCaptureStepBuilder;
 import com.onfido.android.sdk.capture.upload.Captures;
 import com.onfido.android.sdk.capture.upload.DocumentSide;
 import com.onfido.android.sdk.capture.ui.country_selection.CountryAlternatives;
 import com.onfido.android.sdk.capture.DocumentType;
+import com.onfido.android.sdk.capture.utils.CountryCode;
 
 import android.util.Log;
 
@@ -35,33 +37,30 @@ public class OnfidoActivity extends Activity {
     private boolean firstTime = true;
     private static final String TAG = "OnFidoBridge";
 
-    static final Map<String , DocumentType> DocumentTypesMap = new HashMap<String , DocumentType>() {{
-        put("passport", DocumentType.PASSPORT);
-        put("id", DocumentType.NATIONAL_IDENTITY_CARD);
-        put("driverLicense", DocumentType.DRIVING_LICENCE);
-        put("residentCard", DocumentType.RESIDENCE_PERMIT);
-    }};
+    private static final FlowStep canadaLicenceStep = DocumentCaptureStepBuilder.forDrivingLicence()
+        .withCountry(CountryCode.CA)
+        .build();
 
-    private Map<String,FlowStep> createMapStringToFlowStepWithDocType(DocumentType docType){
+    private static final FlowStep passportStep = DocumentCaptureStepBuilder.forPassport()
+        .build();
+
+    private Map<String,FlowStep> createMapStringToFlowStep(){
         HashMap flowStepMapping = new HashMap<String, FlowStep>();
 
         flowStepMapping.put("welcome", FlowStep.WELCOME);
-        if (docType != null) {
-            flowStepMapping.put("document", new CaptureScreenStep(docType, CountryAlternatives.NO_COUNTRY));
-        }
-        else {
-            flowStepMapping.put("document",FlowStep.CAPTURE_DOCUMENT);
-        }
-
+        flowStepMapping.put("document", FlowStep.CAPTURE_DOCUMENT);
+        flowStepMapping.put("drivers_licence_CA", OnfidoActivity.canadaLicenceStep);
+        flowStepMapping.put("passport", OnfidoActivity.passportStep);
         flowStepMapping.put("face", FlowStep.CAPTURE_FACE);
+        // FaceCaptureStep is deprecated
         flowStepMapping.put("face_video", new FaceCaptureStep(FaceCaptureVariant.VIDEO));
         flowStepMapping.put("final", FlowStep.FINAL);
 
         return flowStepMapping;
     }
 
-    private FlowStep[] generateFlowStep(ArrayList<String> flowSteps, DocumentType docType){
-        Map<String,FlowStep> mapping = createMapStringToFlowStepWithDocType(docType);
+    private FlowStep[] generateFlowStep(ArrayList<String> flowSteps){
+        Map<String,FlowStep> mapping = createMapStringToFlowStep();
         FlowStep[] steps = new FlowStep[flowSteps.size()];
 
         for (int i = 0 ; i < flowSteps.size() ; i++) {
@@ -81,19 +80,18 @@ public class OnfidoActivity extends Activity {
             client = OnfidoFactory.create(this).getClient();
 
             Bundle extras = getIntent().getExtras();
-            String applicantId="";
-            String token="";
-            String documentType="";
+            String applicantId = "";
+            String token = "";
             String locale = "en";
-            ArrayList<String> flowSteps=null;
+            ArrayList<String> flowSteps = null;
+
             if (extras != null) {
-                documentType = extras.getString("document_type");
                 token = extras.getString("token");
                 flowSteps = extras.getStringArrayList("flow_steps");
                 locale = extras.getString("locale");
             }
 
-            FlowStep[] flow = generateFlowStep(flowSteps, DocumentTypesMap.get(documentType));
+            FlowStep[] flow = generateFlowStep(flowSteps);
 
             final OnfidoConfig config = OnfidoConfig.builder(this)
                     .withSDKToken(token)
