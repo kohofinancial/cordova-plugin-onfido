@@ -69,7 +69,7 @@
                 <source url="https://cdn.cocoapods.org/"/>
             </config>
             <pods>
-                <pod name="Onfido" spec="13.2.0"/>
+                <pod name="Onfido" spec="18.1.0"/>
             </pods>
         </podspec>
     </platform>

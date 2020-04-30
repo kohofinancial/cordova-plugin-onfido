@@ -6,5 +6,5 @@ repositories {
   }
 }
 dependencies {
-  compile 'com.onfido.sdk.capture:onfido-capture-sdk:5.6.0'
+  compile 'com.onfido.sdk.capture:onfido-capture-sdk:6.0.0'
 }
