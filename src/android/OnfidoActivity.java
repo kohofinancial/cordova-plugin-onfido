@@ -54,7 +54,7 @@ public class OnfidoActivity extends Activity {
         flowStepMapping.put("face", FlowStep.CAPTURE_FACE);
         // FaceCaptureStep is deprecated
         // update to use FaceCaptureStepBuilder.forVideo()
-        flowStepMapping.put("face_video", FaceCaptureStepBuilder().withIntro(true).build());
+        flowStepMapping.put("face_video", FaceCaptureStepBuilder.forVideo().withIntro(true).build());
         flowStepMapping.put("final", FlowStep.FINAL);
 
         return flowStepMapping;
