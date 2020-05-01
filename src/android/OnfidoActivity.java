@@ -14,7 +14,7 @@ import com.onfido.android.sdk.capture.OnfidoConfig;
 import com.onfido.android.sdk.capture.OnfidoFactory;
 import com.onfido.android.sdk.capture.errors.OnfidoException;
 import com.onfido.android.sdk.capture.ui.camera.face.FaceCaptureVariant;
-import com.onfido.android.sdk.capture.ui.camera.face.FaceCaptureStep;
+import com.onfido.android.sdk.capture.ui.camera.face.stepbuilder.FaceCaptureStepBuilder;
 import com.onfido.android.sdk.capture.ui.options.FlowStep;
 import com.onfido.android.sdk.capture.ui.options.CaptureScreenStep;
 import com.onfido.android.sdk.capture.ui.options.stepbuilder.DocumentCaptureStepBuilder;
@@ -53,7 +53,8 @@ public class OnfidoActivity extends Activity {
         flowStepMapping.put("passport", OnfidoActivity.passportStep);
         flowStepMapping.put("face", FlowStep.CAPTURE_FACE);
         // FaceCaptureStep is deprecated
-        flowStepMapping.put("face_video", new FaceCaptureStep(FaceCaptureVariant.VIDEO));
+        // update to use FaceCaptureStepBuilder.forVideo()
+        flowStepMapping.put("face_video", FaceCaptureStepBuilder().withIntro(true).build());
         flowStepMapping.put("final", FlowStep.FINAL);
 
         return flowStepMapping;
@@ -74,8 +75,6 @@ public class OnfidoActivity extends Activity {
     public void onStart() {
         super.onStart();
 
-        // Write your code inside this condition
-        // Here should start the process that expects the onActivityResult
         if (firstTime == true) {
             client = OnfidoFactory.create(this).getClient();
 
