@@ -178,8 +178,8 @@
         case ONFlowConfigErrorMissingSteps:
             errMsg = @"No steps provided";
             break;
-        case ONFlowConfigErrorMultipleApplicants:
-            errMsg = @"Failed to upload capture";
+        case ONFlowConfigErrorInvalidDocumentFormatAndCountryCombination:
+            errMsg = @"Document and Country Combination not supported";
             break;
         default:
             errMsg = [NSString stringWithFormat:@"Unknown error occured. Code: %ld. Description: %@", error.code, error.description];
